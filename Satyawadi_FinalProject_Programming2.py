@@ -6,22 +6,16 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from pathlib import Path
-import os
 
 # ---------------------------------------
-# Load Header Image (single clean version)
+# Load Header Image (GitHub-safe)
 # ---------------------------------------
-
-from pathlib import Path
-
-# Streamlit Cloud can only access files INSIDE the repo
 header_path = Path("header.png")
 
 if header_path.exists():
     st.image(str(header_path), use_container_width=True)
 else:
     st.error("❌ header.png not found. Make sure it is uploaded to your GitHub repo.")
-
 
 # ---------------------------------------
 # Subtitle
@@ -32,11 +26,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-
 # ---------------------------------------
 # Helper Functions
 # ---------------------------------------
-
 def clean_sm(x):
     return np.where(x == 1, 1, 0)
 
@@ -56,11 +48,9 @@ def build_feature_df(s):
     }).dropna()
     return ss
 
-
 # ---------------------------------------
 # Load & Train (Hidden)
 # ---------------------------------------
-
 s = load_data()
 ss = build_feature_df(s)
 
@@ -74,24 +64,19 @@ x_train, x_test, y_train, y_test = train_test_split(
 log_reg = LogisticRegression(class_weight="balanced")
 log_reg.fit(x_train, y_train)
 
-
 # ---------------------------------------
-# TABS
+# Tabs Layout
 # ---------------------------------------
-
 tab1, tab2 = st.tabs(["🔮 Predict LinkedIn Use", "📊 Explore Trends"])
-
 
 # ================================================================
 # 🔮 TAB 1 — PREDICTION
 # ================================================================
-
 with tab1:
     st.header("Tell us about this person")
 
     st.sidebar.header("User Inputs")
 
-    # Income dropdown
     income_labels = {
         1: "Less than $10,000",
         2: "$10,000–$19,999",
@@ -110,7 +95,6 @@ with tab1:
         format_func=lambda x: income_labels[x]
     )
 
-    # Education dropdown
     education_labels = {
         1: "Less than high school",
         2: "High school incomplete",
@@ -148,7 +132,6 @@ with tab1:
         format_func=lambda x: "Female" if x else "Male"
     )
 
-    # Profile Summary
     st.subheader("User Profile Summary")
     st.info(f"""
     **Income:** {income_labels[income]}  
@@ -159,7 +142,6 @@ with tab1:
     **Gender:** {"Female" if female_choice else "Male"}  
     """)
 
-    # Prediction
     person = pd.DataFrame({
         "income": [income],
         "education": [education_choice],
@@ -175,11 +157,9 @@ with tab1:
     st.success(f"🌟 **Estimated LinkedIn Use Probability: {percentage}%**")
     st.write("This estimate is based on modeling patterns observed in survey data.")
 
-
 # ================================================================
 # 📊 TAB 2 — EXPLORATORY ANALYSIS
 # ================================================================
-
 with tab2:
     st.header("Explore Broader Social Patterns 💫")
 
@@ -200,7 +180,18 @@ with tab2:
 
     if plot_choice == "Distribution of LinkedIn Use":
         sns.countplot(data=ss, x="sm_li", ax=ax)
+
+        # Meaningful x-axis labels
+        ax.set_xticklabels(["Non-User (0)", "LinkedIn User (1)"])
+
+        # Labels + title
         ax.set_title("Distribution of LinkedIn Use")
+        ax.set_xlabel("LinkedIn Use Category")
+        ax.set_ylabel("Count")
+
+        # Add count labels on bars
+        for container in ax.containers:
+            ax.bar_label(container, padding=3)
 
     elif plot_choice == "LinkedIn Use by Parent":
         sns.barplot(data=ss, x="parent", y="sm_li", ax=ax)
@@ -212,7 +203,7 @@ with tab2:
 
     elif plot_choice == "LinkedIn Use by Gender":
         sns.barplot(data=ss, x="female", y="sm_li", ax=ax)
-        ax.set.set_title("LinkedIn Use by Gender")
+        ax.set_title("LinkedIn Use by Gender")
 
     elif plot_choice == "LinkedIn Use by Income":
         sns.barplot(data=ss, x="income", y="sm_li", ax=ax)
