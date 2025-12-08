@@ -12,13 +12,16 @@ import os
 # Load Header Image (single clean version)
 # ---------------------------------------
 
-# Update this path if your folder name is different
-header_path = Path("/Users/anyasatyawadi/Desktop/Programming2_FinalProject/header.png")
+from pathlib import Path
+
+# Streamlit Cloud can only access files INSIDE the repo
+header_path = Path("header.png")
 
 if header_path.exists():
     st.image(str(header_path), use_container_width=True)
 else:
-    st.error(f"❌ Could not find header.png at: {header_path}")
+    st.error("❌ header.png not found. Make sure it is uploaded to your GitHub repo.")
+
 
 # ---------------------------------------
 # Subtitle
