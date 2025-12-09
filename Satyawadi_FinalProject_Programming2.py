@@ -163,9 +163,12 @@ with tab1:
 
     prob = log_reg.predict_proba(person)[0][1]
     percentage = round(prob * 100, 1)
+    classification = "LinkedIn User" if prob >= 0.5 else "Non-User"
+
 
     st.success(f"🌟 **Estimated LinkedIn Use Probability: {percentage}%**")
     st.write("This estimate is based on modeling patterns observed in survey data.")
+    st.subheader(f"Prediction: {classification}")
 
 
 # ================================================================
